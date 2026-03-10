@@ -14,7 +14,7 @@
       }
     },
     "test": {
-      "executor": "@nx/js:node",
+      "executor": "nx:run-commands",
       "options": {
         "command": "npx vitest run",
         "cwd": "libs/workflow-core"
