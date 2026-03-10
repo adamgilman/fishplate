@@ -13,7 +13,7 @@ Dev machine                        Hosted
 ┌──────────┐                       ┌─────────────────────┐
 │  Worker   │── GetTask ──────────→│  ConnectRPC API     │
 │   (Go)    │←── TaskAssignment ───│  (connect-go)       │
-│           │── ReportResult ─────→│                     │
+│           │── SubmitTaskResult ─────→│                     │
 └──────────┘                       │  Graph Walker       │
                                    │  CEL-Go             │
 ┌──────────┐                       │  DBOS-Go + Postgres │
@@ -43,7 +43,7 @@ Called by workers.
 ```protobuf
 service WorkerService {
   rpc GetTask(GetTaskRequest) returns (GetTaskResponse);
-  rpc ReportResult(ReportResultRequest) returns (ReportResultResponse);
+  rpc SubmitTaskResult(SubmitTaskResultRequest) returns (SubmitTaskResultResponse);
 }
 
 message GetTaskRequest {
@@ -57,7 +57,7 @@ message GetTaskResponse {
   optional bytes input = 3; // JSON-encoded evaluated input
 }
 
-message ReportResultRequest {
+message SubmitTaskResultRequest {
   string task_id = 1;
   enum Status {
     SUCCESS = 0;
@@ -68,7 +68,7 @@ message ReportResultRequest {
   optional string error = 4;
 }
 
-message ReportResultResponse {}
+message SubmitTaskResultResponse {}
 ```
 
 ### AdminService
@@ -107,7 +107,7 @@ The walker is pure Go — no DB access, no side effects. It takes a definition a
 
 ### Task Dispatcher
 
-Bridges the orchestrator and workers. Pending tasks sit in a Postgres table. `GetTask` queries for the oldest unclaimed task for the worker's tenant, claims it (atomic row lock), and returns it. `ReportResult` writes the result and unblocks the waiting orchestrator.
+Bridges the orchestrator and workers. Pending tasks sit in a Postgres table. `GetTask` queries for the oldest unclaimed task for the worker's tenant, claims it (atomic row lock), and returns it. `SubmitTaskResult` writes the result and unblocks the waiting orchestrator.
 
 ## Worker SDK
 
@@ -120,7 +120,7 @@ worker.Handle("llm_generate", func(input map[string]any) (map[string]any, error)
 })
 ```
 
-**Poll loop** — Calls `GetTask` on a fixed interval (configurable, default 1s). On task received, looks up handler by name, executes it, calls `ReportResult` with output or error.
+**Poll loop** — Calls `GetTask` on a fixed interval (configurable, default 1s). On task received, looks up handler by name, executes it, calls `SubmitTaskResult` with output or error.
 
 **Configuration** — Control plane URL, API key, worker ID (auto-generated or user-specified), poll interval. Environment variables or config file.
 
@@ -135,8 +135,8 @@ pending → claimed → running → completed | failed
 1. **pending** — Orchestrator creates task row when walker yields `execute_action`
 2. **claimed** — Worker's `GetTask` claims it (atomic row update)
 3. **running** — Worker executing the handler
-4. **completed** — Worker calls `ReportResult` with success + context updates
-5. **failed** — Worker calls `ReportResult` with error, or task times out
+4. **completed** — Worker calls `SubmitTaskResult` with success + context updates
+5. **failed** — Worker calls `SubmitTaskResult` with error, or task times out
 
 **Timeout handling**: each task has a deadline (configurable per handler or global default). If a worker claims a task but never reports back, a background sweeper resets it to `pending` after the deadline. Another worker picks it up.
 
