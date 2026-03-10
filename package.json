@@ -1,0 +1,20 @@
+{
+  "name": "@fishplate/source",
+  "version": "0.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "libs/*"
+  ],
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adamgilman/fishplate.git"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "nx": "22.5.4",
+    "@nx/js": "22.5.4",
+    "typescript": "~5.7.0"
+  }
+}
