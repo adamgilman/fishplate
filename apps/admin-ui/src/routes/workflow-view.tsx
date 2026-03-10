@@ -3,10 +3,12 @@ import { ReactFlowProvider } from '@xyflow/react';
 import { useWorkflow } from '@/hooks/use-workflow';
 import { WorkflowGraph } from '@/components/workflow-graph/workflow-graph';
 import { ContextInspector } from '@/components/context-inspector/context-inspector';
+import { DefinitionPanel } from '@/components/definition-panel/definition-panel';
 
 export function WorkflowView() {
   const { data, isLoading, error } = useWorkflow('exec-001');
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const [showDefinition, setShowDefinition] = useState(true);
 
   if (isLoading) {
     return (
@@ -35,7 +37,14 @@ export function WorkflowView() {
             v{definition.version} — Execution: {execution.executionId}
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => setShowDefinition(v => !v)}
+            className="text-xs text-zinc-500 hover:text-zinc-300 border border-zinc-700 rounded px-2 py-1"
+          >
+            {showDefinition ? 'Hide' : 'Show'} Definition
+          </button>
+          <div className="flex items-center gap-2">
           <span className={`inline-block w-2 h-2 rounded-full ${
             execution.status === 'running' ? 'bg-blue-500 animate-pulse' :
             execution.status === 'completed' ? 'bg-emerald-500' :
@@ -45,8 +54,10 @@ export function WorkflowView() {
           }`} />
           <span className="text-sm text-zinc-400">{execution.status}</span>
         </div>
+        </div>
       </header>
       <div className="flex flex-1 overflow-hidden">
+        {showDefinition && <DefinitionPanel definition={definition} />}
         <div className="flex-1">
           <ReactFlowProvider>
             <WorkflowGraph
