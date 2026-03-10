@@ -48,12 +48,13 @@ describe('TerminalNode', () => {
 });
 
 describe('DecisionNode', () => {
-  it('renders condition text from edges', () => {
+  it('renders node id and condition count', () => {
     const data = makeNodeData({
       definition: { id: 'review', type: 'decision' },
       edges: [{ from: 'review', to: 'deploy', when: 'ctx.ok == true' }],
     });
     renderInFlow(<DecisionNode {...nodeProps('review', data, 'decision')} />);
-    expect(screen.getByText('ctx.ok == true')).toBeInTheDocument();
+    expect(screen.getByText('review')).toBeInTheDocument();
+    expect(screen.getByText('1 condition')).toBeInTheDocument();
   });
 });

@@ -12,16 +12,11 @@ export function DecisionNode({ data }: NodeProps<Node<WorkflowNodeData>>) {
     <BaseNode data={data} shape="diamond" className="bg-zinc-900/80 border-dashed">
       <div className="flex items-center gap-2 justify-center">
         <GitBranch className="w-4 h-4 text-zinc-400" />
-        <span className="text-sm font-medium text-zinc-200">Decision</span>
+        <span className="text-sm font-medium text-zinc-200">{data.definition.id}</span>
       </div>
       {conditions.length > 0 && (
-        <div className="mt-1 space-y-0.5">
-          {conditions.map((c, i) => (
-            <div key={i} className="text-xs text-zinc-500 font-mono truncate max-w-[180px]">{c}</div>
-          ))}
-        </div>
+        <div className="text-xs text-zinc-500 mt-1">{conditions.length} condition{conditions.length > 1 ? 's' : ''}</div>
       )}
-      <div className="text-xs text-zinc-500 mt-1">{data.definition.id}</div>
     </BaseNode>
   );
 }
