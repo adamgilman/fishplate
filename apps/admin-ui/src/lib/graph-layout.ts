@@ -20,6 +20,7 @@ export interface WorkflowEdgeData {
 
 const NODE_WIDTH = 220;
 const NODE_HEIGHT = 80;
+const TERMINAL_SIZE = 64;
 
 export function layoutWorkflowGraph(
   definition: WorkflowDefinition,
@@ -32,7 +33,10 @@ export function layoutWorkflowGraph(
   const nodeStateMap = new Map(execution.nodeStates.map(ns => [ns.nodeId, ns]));
 
   for (const node of definition.nodes) {
-    g.setNode(node.id, { width: NODE_WIDTH, height: NODE_HEIGHT });
+    const isTerminal = node.type === 'terminal';
+    const w = isTerminal ? TERMINAL_SIZE : NODE_WIDTH;
+    const h = isTerminal ? TERMINAL_SIZE : NODE_HEIGHT;
+    g.setNode(node.id, { width: w, height: h });
   }
 
   for (const edge of definition.edges) {
@@ -45,11 +49,13 @@ export function layoutWorkflowGraph(
     const pos = g.node(node.id);
     const outgoingEdges = definition.edges.filter(e => e.from === node.id);
     const outgoingEdgeStates = execution.edgeStates.filter(e => e.from === node.id);
+    const w = pos.width;
+    const h = pos.height;
 
     return {
       id: node.id,
       type: node.type,
-      position: { x: pos.x - NODE_WIDTH / 2, y: pos.y - NODE_HEIGHT / 2 },
+      position: { x: pos.x - w / 2, y: pos.y - h / 2 },
       data: {
         definition: node,
         executionState: nodeStateMap.get(node.id) ?? { nodeId: node.id, status: 'pending' as const },
