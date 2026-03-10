@@ -15,7 +15,7 @@ export interface WorkflowEdgeData {
   taken: boolean;
   when?: string;
   priority?: number;
-  isBackEdge?: boolean;
+  points: { x: number; y: number }[];
 }
 
 const NODE_WIDTH = 220;
@@ -64,29 +64,21 @@ export function layoutWorkflowGraph(
     execution.edgeStates.map(es => [`${es.from}->${es.to}:${es.when ?? ''}:${es.priority ?? ''}`, es])
   );
 
-  // Build position lookup for back-edge detection
-  const nodePositionMap = new Map(nodes.map(n => [n.id, n.position]));
-
   const edges: Edge<WorkflowEdgeData>[] = definition.edges.map((edge, i) => {
     const key = `${edge.from}->${edge.to}:${edge.when ?? ''}:${edge.priority ?? ''}`;
     const edgeState = edgeStateMap.get(key);
-
-    const sourcePos = nodePositionMap.get(edge.from);
-    const targetPos = nodePositionMap.get(edge.to);
-    const isBackEdge = sourcePos && targetPos && targetPos.y <= sourcePos.y;
+    const dagreEdge = g.edge(edge.from, edge.to);
 
     return {
       id: `e-${edge.from}-${edge.to}-${i}`,
       source: edge.from,
       target: edge.to,
-      type: isBackEdge ? 'back' : undefined,
-      sourceHandle: isBackEdge ? 'back-source' : undefined,
-      targetHandle: isBackEdge ? 'back-target' : undefined,
+      type: 'dagre',
       data: {
         taken: edgeState?.taken ?? false,
         when: edge.when,
         priority: edge.priority,
-        isBackEdge: !!isBackEdge,
+        points: dagreEdge?.points ?? [],
       },
     };
   });

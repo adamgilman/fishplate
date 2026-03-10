@@ -35,10 +35,8 @@ export function BaseNode({ data, children, className, shape = 'rounded' }: BaseN
       )}
     >
       <Handle type="target" position={Position.Top} className="!bg-zinc-500" />
-      <Handle type="target" position={Position.Right} id="back-target" className="!bg-zinc-500" />
       {children}
       <Handle type="source" position={Position.Bottom} className="!bg-zinc-500" />
-      <Handle type="source" position={Position.Right} id="back-source" className="!bg-zinc-500" />
     </div>
   );
 }

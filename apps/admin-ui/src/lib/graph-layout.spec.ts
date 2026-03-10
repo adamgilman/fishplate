@@ -81,4 +81,23 @@ describe('layoutWorkflowGraph', () => {
     expect(takenEdge.data.taken).toBe(true);
     expect(untakenEdge.data.taken).toBe(false);
   });
+
+  it('includes dagre waypoints on every edge', () => {
+    const result = layoutWorkflowGraph(definition, execution);
+    for (const edge of result.edges) {
+      expect(edge.data.points).toBeDefined();
+      expect(edge.data.points.length).toBeGreaterThanOrEqual(2);
+      for (const pt of edge.data.points) {
+        expect(typeof pt.x).toBe('number');
+        expect(typeof pt.y).toBe('number');
+      }
+    }
+  });
+
+  it('uses dagre edge type for all edges', () => {
+    const result = layoutWorkflowGraph(definition, execution);
+    for (const edge of result.edges) {
+      expect(edge.type).toBe('dagre');
+    }
+  });
 });

@@ -13,7 +13,7 @@ import type { WorkflowDefinition } from '@fishplate/workflow-core';
 import type { WorkflowExecutionView } from '@/types/execution-view';
 import { layoutWorkflowGraph } from '@/lib/graph-layout';
 import { ActionNode, DecisionNode, ForkNode, GateNode, TerminalNode, WorkflowNode } from './nodes';
-import { BackEdge } from './edges/back-edge';
+import { DagreEdge } from './edges/dagre-edge';
 
 const nodeTypes: NodeTypes = {
   action: ActionNode,
@@ -25,7 +25,7 @@ const nodeTypes: NodeTypes = {
 };
 
 const edgeTypes: EdgeTypes = {
-  back: BackEdge,
+  dagre: DagreEdge,
 };
 
 interface WorkflowGraphProps {
@@ -86,7 +86,6 @@ export function WorkflowGraph({ definition, execution, onNodeSelect }: WorkflowG
         onSelectionChange={handleSelectionChange}
         fitView
         proOptions={{ hideAttribution: true }}
-        defaultEdgeOptions={{ type: 'smoothstep' }}
       >
         <Background color="#27272a" gap={20} />
         <Controls className="!bg-zinc-800 !border-zinc-700 [&>button]:!bg-zinc-800 [&>button]:!border-zinc-700 [&>button]:!text-zinc-400" />
