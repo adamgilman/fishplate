@@ -21,7 +21,7 @@ export function BaseNode({ data, children, className, shape = 'rounded' }: BaseN
   const status = data.executionState.status;
   const shapeClass = {
     rounded: 'rounded-lg',
-    diamond: 'rounded-lg rotate-45',
+    diamond: 'rounded-lg',
     circle: 'rounded-full',
   }[shape];
 
