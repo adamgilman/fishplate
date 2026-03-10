@@ -54,8 +54,16 @@ export function DagreEdge({
 
   // Label at the middle waypoint
   const midIdx = Math.floor(points.length / 2);
-  const labelX = points[midIdx].x;
-  const labelY = points[midIdx].y;
+  const midPt = points[midIdx];
+  const firstPt = points[0];
+  const lastPt = points[points.length - 1];
+
+  // If the midpoint is to the right of both endpoints, the edge swings right
+  // (back-edge). Left-align the label so it doesn't overlap nodes to the left.
+  const swingsRight = midPt.x > firstPt.x && midPt.x > lastPt.x;
+  const labelTransform = swingsRight
+    ? `translate(4px, -50%) translate(${midPt.x}px, ${midPt.y}px)`
+    : `translate(-50%, -100%) translate(${midPt.x}px, ${midPt.y - 4}px)`;
 
   return (
     <>
@@ -65,7 +73,7 @@ export function DagreEdge({
           <div
             style={{
               position: 'absolute',
-              transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
+              transform: labelTransform,
               pointerEvents: 'all',
               ...labelBgStyle,
               padding: '2px 4px',
