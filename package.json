@@ -13,8 +13,9 @@
   },
   "license": "ISC",
   "devDependencies": {
-    "nx": "22.5.4",
     "@nx/js": "22.5.4",
+    "@testing-library/dom": "^10.4.1",
+    "nx": "22.5.4",
     "typescript": "~5.7.0"
   }
 }
