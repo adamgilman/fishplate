@@ -79,6 +79,7 @@ export function layoutWorkflowGraph(
       id: `e-${edge.from}-${edge.to}-${i}`,
       source: edge.from,
       target: edge.to,
+      type: isBackEdge ? 'back' : undefined,
       sourceHandle: isBackEdge ? 'back-source' : undefined,
       targetHandle: isBackEdge ? 'back-target' : undefined,
       data: {

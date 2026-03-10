@@ -4,6 +4,7 @@ import {
   Background,
   Controls,
   type NodeTypes,
+  type EdgeTypes,
   type OnSelectionChangeParams,
   MarkerType,
 } from '@xyflow/react';
@@ -12,6 +13,7 @@ import type { WorkflowDefinition } from '@fishplate/workflow-core';
 import type { WorkflowExecutionView } from '@/types/execution-view';
 import { layoutWorkflowGraph } from '@/lib/graph-layout';
 import { ActionNode, DecisionNode, ForkNode, GateNode, TerminalNode, WorkflowNode } from './nodes';
+import { BackEdge } from './edges/back-edge';
 
 const nodeTypes: NodeTypes = {
   action: ActionNode,
@@ -20,6 +22,10 @@ const nodeTypes: NodeTypes = {
   gate: GateNode,
   terminal: TerminalNode,
   workflow: WorkflowNode,
+};
+
+const edgeTypes: EdgeTypes = {
+  back: BackEdge,
 };
 
 interface WorkflowGraphProps {
@@ -76,6 +82,7 @@ export function WorkflowGraph({ definition, execution, onNodeSelect }: WorkflowG
         nodes={nodes}
         edges={styledEdges}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         onSelectionChange={handleSelectionChange}
         fitView
         proOptions={{ hideAttribution: true }}
