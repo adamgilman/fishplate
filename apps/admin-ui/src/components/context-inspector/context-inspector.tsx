@@ -81,7 +81,7 @@ export function ContextInspector({ definition, execution, selectedNodeId }: Cont
         <Section title="Conditions">
           {outgoingEdges.map((edge, i) => {
             const edgeState = outgoingEdgeStates.find(
-              es => es.from === edge.from && es.to === edge.to && es.when === edge.when
+              es => es.from === edge.from && es.to === edge.to && es.when === edge.when && es.priority === edge.priority
             );
             return (
               <div key={i} className="flex items-start gap-2 mb-1">
