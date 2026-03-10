@@ -1,13 +1,12 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { WorkflowView } from './routes/workflow-view';
 
 const queryClient = new QueryClient();
 
 export function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="min-h-screen bg-zinc-950 text-zinc-100">
-        <h1 className="p-4 text-xl font-semibold">Fishplate — Workflow Monitor</h1>
-      </div>
+      <WorkflowView />
     </QueryClientProvider>
   );
 }
