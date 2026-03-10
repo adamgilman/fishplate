@@ -54,11 +54,7 @@ export function WorkflowGraph({ definition, execution, onNodeSelect }: WorkflowG
           type: MarkerType.ArrowClosed,
           color: edge.data?.taken ? '#3b82f6' : '#3f3f46',
         },
-        label: edge.data?.when
-          ? edge.data.when.length > 30
-            ? edge.data.when.substring(0, 30) + '...'
-            : edge.data.when
-          : undefined,
+        label: edge.data?.when ?? undefined,
         labelStyle: { fill: '#71717a', fontSize: 10 },
         labelBgStyle: { fill: '#09090b', fillOpacity: 0.8 },
       })),
