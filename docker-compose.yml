@@ -2,7 +2,7 @@ services:
   postgres:
     image: postgres:16
     ports:
-      - "5432:5432"
+      - "5433:5432"
     environment:
       POSTGRES_USER: fishplate
       POSTGRES_PASSWORD: fishplate
@@ -32,7 +32,7 @@ services:
       HOST: "0.0.0.0"
       PORT: "8080"
     healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:8080/fishplate.worker.v1.WorkerService/ || exit 1"]
+      test: ["CMD-SHELL", "curl -s http://localhost:8080/ > /dev/null 2>&1"]
       interval: 2s
       timeout: 5s
       retries: 10
