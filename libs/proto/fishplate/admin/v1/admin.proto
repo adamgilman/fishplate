@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package fishplate.admin.v1;
+
+option go_package = "fishplate/gen/go/fishplate/admin/v1;adminv1";
+
+service AdminService {
+  rpc GetWorkflowExecution(GetWorkflowExecutionRequest) returns (GetWorkflowExecutionResponse);
+  rpc ListWorkflowExecutions(ListWorkflowExecutionsRequest) returns (ListWorkflowExecutionsResponse);
+  rpc StartWorkflow(StartWorkflowRequest) returns (StartWorkflowResponse);
+}
+
+message GetWorkflowExecutionRequest {
+  string execution_id = 1;
+}
+
+message GetWorkflowExecutionResponse {}
+
+message ListWorkflowExecutionsRequest {
+  string tenant_id = 1;
+}
+
+message ListWorkflowExecutionsResponse {}
+
+message StartWorkflowRequest {
+  string definition_id = 1;
+  bytes params = 2;
+}
+
+message StartWorkflowResponse {
+  string execution_id = 1;
+}

@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package fishplate.worker.v1;
+
+option go_package = "fishplate/gen/go/fishplate/worker/v1;workerv1";
+
+service WorkerService {
+  rpc GetTask(GetTaskRequest) returns (GetTaskResponse);
+  rpc SubmitTaskResult(SubmitTaskResultRequest) returns (SubmitTaskResultResponse);
+}
+
+message GetTaskRequest {
+  string worker_id = 1;
+  string tenant_id = 2;
+}
+
+message GetTaskResponse {
+  optional string task_id = 1;
+  optional string handler = 2;
+  optional bytes input = 3;
+}
+
+message SubmitTaskResultRequest {
+  string task_id = 1;
+  TaskStatus status = 2;
+  optional bytes context_updates = 3;
+  optional string error = 4;
+}
+
+enum TaskStatus {
+  TASK_STATUS_UNSPECIFIED = 0;
+  TASK_STATUS_SUCCESS = 1;
+  TASK_STATUS_ERROR = 2;
+}
+
+message SubmitTaskResultResponse {}
