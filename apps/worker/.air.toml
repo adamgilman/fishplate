@@ -1,0 +1,13 @@
+root = "."
+tmp_dir = "/tmp/air"
+
+[build]
+  cmd = "go build -o /tmp/air/worker ./cmd/worker/"
+  bin = "/tmp/air/worker"
+  include_ext = ["go"]
+  exclude_dir = ["dist", "vendor"]
+  exclude_regex = ["_test\\.go$"]
+  delay = 1000
+
+[log]
+  time = true
