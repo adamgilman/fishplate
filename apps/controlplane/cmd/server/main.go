@@ -7,10 +7,13 @@ import (
 	"net/http"
 	"os"
 
+	"connectrpc.com/grpcreflect"
 	"github.com/adamgilman/fishplate/apps/controlplane/internal/api"
 	"github.com/adamgilman/fishplate/apps/controlplane/internal/auth"
 	"github.com/adamgilman/fishplate/apps/controlplane/internal/dispatcher"
-	"github.com/adamgilman/fishplate/apps/controlplane/internal/model"
+	"github.com/adamgilman/fishplate/apps/controlplane/internal/store"
+	"golang.org/x/net/http2"
+	"golang.org/x/net/http2/h2c"
 
 	"fishplate/gen/go/fishplate/worker/v1/workerv1connect"
 )
@@ -20,32 +23,39 @@ func main() {
 	if port == "" {
 		port = "8080"
 	}
+	host := os.Getenv("HOST")
+	if host == "" {
+		host = "0.0.0.0"
+	}
+	dbURL := os.Getenv("DATABASE_URL")
+	if dbURL == "" {
+		log.Fatal("DATABASE_URL is required")
+	}
 
-	dispatcherDB := &stubDispatcherDB{}
-	keyStore := &stubKeyStore{}
+	ctx := context.Background()
+	s, err := store.New(ctx, dbURL)
+	if err != nil {
+		log.Fatalf("failed to connect to database: %v", err)
+	}
+	defer s.Close()
 
-	d := dispatcher.New(dispatcherDB)
-	a := auth.New(keyStore)
+	d := dispatcher.New(s)
+	a := auth.New(s)
 	workerHandler := api.NewWorkerHandler(d, a)
 
 	mux := http.NewServeMux()
 	path, handler := workerv1connect.NewWorkerServiceHandler(workerHandler)
 	mux.Handle(path, handler)
 
-	addr := fmt.Sprintf(":%s", port)
+	reflector := grpcreflect.NewStaticReflector(workerv1connect.WorkerServiceName)
+	mux.Handle(grpcreflect.NewHandlerV1(reflector))
+	mux.Handle(grpcreflect.NewHandlerV1Alpha(reflector))
+
+	addr := fmt.Sprintf("%s:%s", host, port)
 	log.Printf("fishplate control plane listening on %s", addr)
-	if err := http.ListenAndServe(addr, mux); err != nil {
+
+	h2cHandler := h2c.NewHandler(mux, &http2.Server{})
+	if err := http.ListenAndServe(addr, h2cHandler); err != nil {
 		log.Fatalf("server error: %v", err)
 	}
 }
-
-type stubDispatcherDB struct{}
-
-func (s *stubDispatcherDB) CreateTask(_ context.Context, _ *model.Task) error                    { return nil }
-func (s *stubDispatcherDB) ClaimTask(_ context.Context, _, _ string) (*model.Task, error)        { return nil, nil }
-func (s *stubDispatcherDB) CompleteTask(_ context.Context, _ string, _ map[string]any) error      { return nil }
-func (s *stubDispatcherDB) FailTask(_ context.Context, _ string, _ string) error                  { return nil }
-
-type stubKeyStore struct{}
-
-func (s *stubKeyStore) GetTenantByKeyHash(_ context.Context, _ string) (string, error) { return "", nil }
