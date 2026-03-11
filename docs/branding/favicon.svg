@@ -1,0 +1,13 @@
+<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Simplified for favicon clarity -->
+  <!-- Top rail -->
+  <rect x="1" y="5" width="5.5" height="1.2" rx="0.6" fill="#E2E8F0"/>
+  <rect x="9.5" y="5" width="5.5" height="1.2" rx="0.6" fill="#E2E8F0"/>
+  <!-- Bottom rail -->
+  <rect x="1" y="9.8" width="5.5" height="1.2" rx="0.6" fill="#E2E8F0"/>
+  <rect x="9.5" y="9.8" width="5.5" height="1.2" rx="0.6" fill="#E2E8F0"/>
+  <!-- Fishplate top -->
+  <rect x="5.5" y="3.8" width="5" height="3.4" rx="0.8" fill="#3B82F6"/>
+  <!-- Fishplate bottom -->
+  <rect x="5.5" y="8.8" width="5" height="3.4" rx="0.8" fill="#3B82F6"/>
+</svg>
