@@ -141,3 +141,7 @@ vite.config.ts.timestamp-*
 .nx/installation
 .nx/cache
 .nx/workspace-data
+
+# Go binaries
+apps/controlplane/server
+apps/worker/worker

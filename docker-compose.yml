@@ -1,0 +1,63 @@
+services:
+  postgres:
+    image: postgres:16
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: fishplate
+      POSTGRES_PASSWORD: fishplate
+      POSTGRES_DB: fishplate
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./apps/controlplane/migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fishplate"]
+      interval: 2s
+      timeout: 5s
+      retries: 10
+
+  controlplane:
+    build:
+      context: .
+      dockerfile: docker/go.Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/repo
+      - go-mod-cache:/go/pkg/mod
+      - go-build-cache:/root/.cache/go-build
+    working_dir: /repo/apps/controlplane
+    environment:
+      DATABASE_URL: postgres://fishplate:fishplate@postgres:5432/fishplate?sslmode=disable
+      HOST: "0.0.0.0"
+      PORT: "8080"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://localhost:8080/ > /dev/null 2>&1"]
+      interval: 2s
+      timeout: 5s
+      retries: 10
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  worker:
+    build:
+      context: .
+      dockerfile: docker/go.Dockerfile
+    volumes:
+      - .:/repo
+      - go-mod-cache:/go/pkg/mod
+      - go-build-cache:/root/.cache/go-build
+    working_dir: /repo/apps/worker
+    environment:
+      FISHPLATE_URL: http://controlplane:8080
+      FISHPLATE_API_KEY: fp_demo_key
+      FISHPLATE_TENANT_ID: "00000000-0000-0000-0000-000000000001"
+    depends_on:
+      controlplane:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  go-mod-cache:
+  go-build-cache:
