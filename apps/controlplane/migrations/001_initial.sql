@@ -33,11 +33,3 @@ CREATE TABLE IF NOT EXISTS workflow_executions (
   created_at          TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-ALTER TABLE workflow_definitions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE workflow_executions ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY tenant_isolation_definitions ON workflow_definitions
-  USING (tenant_id = current_setting('app.tenant_id')::UUID);
-
-CREATE POLICY tenant_isolation_executions ON workflow_executions
-  USING (tenant_id = current_setting('app.tenant_id')::UUID);

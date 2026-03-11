@@ -28,11 +28,3 @@ CREATE TABLE IF NOT EXISTS api_keys (
   revoked_at  TIMESTAMPTZ
 );
 
-ALTER TABLE tasks ENABLE ROW LEVEL SECURITY;
-ALTER TABLE api_keys ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY tenant_isolation_tasks ON tasks
-  USING (tenant_id = current_setting('app.tenant_id')::UUID);
-
-CREATE POLICY tenant_isolation_api_keys ON api_keys
-  USING (tenant_id = current_setting('app.tenant_id')::UUID);
